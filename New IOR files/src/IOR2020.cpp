@@ -46,7 +46,7 @@ struct FinishTop {		// 00   01   02   10   11   12   20   21   22
 FinishTop creatFirsLevelForFinishTops(int a, int b, int c);
 int typeCheckForFinishTops(FinishTop top, int level, int pos);
 bool blockIsNotUsed(FinishTop top, int new_block);
-string FinishTopToStr(FinishTop top);
+string finishTopToStr(FinishTop top);
 
 
 
@@ -99,14 +99,13 @@ int main() {
 //======================/ Создание 1-х этажей схем построек/======================
 
 	vector<FinishTop> first_level_finish_tops(0);
-	vector<FinishTop> level_1_and_2_finish_tops(0);
-	vector<FinishTop> all_finish_tops(0);
+
 	myfile.open("2.txt");
 
 	//От 0 до 9 т.к. в каждой зоне есть минимум 1 блок
 	for (short int i = first_color_of_big_blocks; i <= last_color_of_small_blocks; i++) {							// 1-й этаж	1-я зона
 		for (short int j = first_color_of_big_blocks; j <= last_color_of_small_blocks; j++) {						// 1-й этаж	2-я зона
-			if (i != j) { for (short int k = first_color_of_big_blocks; k <= last_color_of_small_blocks; k++) {	// 1-й этаж	3-я зона
+			if (i != j) { for (short int k = first_color_of_big_blocks; k <= last_color_of_small_blocks; k++) {		// 1-й этаж	3-я зона
 				if ((i != k) && (j != k)) {
 					first_level_finish_tops.push_back(creatFirsLevelForFinishTops(i, j, k));
 					myfile << first_level_finish_tops[first_level_finish_tops.size() - 1].buildings[0];
@@ -119,81 +118,78 @@ int main() {
 	myfile.close();
 
 //======================/ Создание 2-х этажей схем построек/======================
-// TODO:
 
-//	...
+	vector<FinishTop> pos1_on_level2_finish_tops(0);
+
 	myfile.open("3.txt");
 
-	for (int i = 0; i < first_level_finish_tops.size(); i++) {														// все 1-е этажи
-		short int count_of_spiers = 0;
-				for (short int j = 0; j < 3; j++) {																	// все постройки (0, 1, 2)
-					if ((typeCheckForFinishTops(first_level_finish_tops[i], 0, j) != 0)) {							// если не этаж, то над ним х
-						count_of_spiers++;
-						if (count_of_spiers == 3) all_finish_tops.push_back(first_level_finish_tops[i]);
-						// else { cout << "Жизнь - боль, смотрим дальше..." << endl; }
-					} else {
-						// надо добавить в .. все возможные надстройки над этим этажем, причем так чтобы следующий 1е этаж
-	//					for (int k = 0; k < last_color_of_small_blocks; k ++) {					// заполнение
-	//						if (blockIsNotUsed(first_level_finish_tops[i], k)) {
-	//							first_level_finish_tops[i].buildings[j + 3] = k + 48;
-	//							myfile << "@ " << j << " "  <<  FinishTopToStr(first_level_finish_tops[i]) << endl;
-	//						}
-	//					}
-					}
+
+//=====================/ Застройка 1-й позиции 2-ого этажа /======================
+
+	for (int i = 0; i < first_level_finish_tops.size(); i++) {											// все 1-е этажи построек
+		if ((typeCheckForFinishTops(first_level_finish_tops[i], 0, 0) != 0)) {							// если не этаж, то над ним х
+			pos1_on_level2_finish_tops.push_back(first_level_finish_tops[i]);							// надо добавить в .. , чтобы следующий 1е этаж создавались на основе ..
+		} else {																						// если можно что-то поставить на данный блик
+			// надо добавить в .. все возможные надстройки над этим этажом, причем так чтобы следующий 1е этаж создавались на основе ..
+			for (int k = 0; k < last_color_of_small_blocks; k ++) {										// заполнение
+				if (blockIsNotUsed(first_level_finish_tops[i], k)) {
+					first_level_finish_tops[i].buildings[3] = k + 48;
+					//myfile << finishTopToStr(first_level_finish_tops[i]) << endl;
+					pos1_on_level2_finish_tops.push_back(first_level_finish_tops[i]);
 				}
-			}
-
-/*
-	for (int i = 0; i < first_level_finish_tops.size(); i++) {														// все 1е этажи
-			bool top_is_not_checked = 1;
-			for (int j = 0; j < 3; j++) {																			// все постройки (0, 1, 2)
-				if ((typeCheckForFinishTops(first_level_finish_tops[i], 0, j) != 0)&&(top_is_not_checked)) {		// если не этаж, то над ним х
-					top_is_not_checked = 0;
-					myfile << "$ " << j << " " << FinishTopToStr(first_level_finish_tops[i]) << endl;
-					//level_1_and_2_finish_tops.push_back(first_level_finish_tops[i]);
-				} else {
-//					for (int k = 0; k < last_color_of_small_blocks; k ++) {					// заполнение
-//						if (blockIsNotUsed(first_level_finish_tops[i], k)) {
-//							first_level_finish_tops[i].buildings[j + 3] = k + 48;
-//							myfile << "@ " << j << " "  <<  FinishTopToStr(first_level_finish_tops[i]) << endl;
-//						}
-//					}
-				}
-			}
-		}
-
-
-/*
-	for (int i = 0; i < first_level_finish_tops.size(); i++) {							// все 1е этажи
-		for (int j = 0; j < 3; j++) {													// все постройки (0, 1, 2)
-			if (typeCheckForFinishTops(first_level_finish_tops[i], 0, j) != 0) {		// если не этаж, то над ним х
-				myfile << FinishTopToStr(first_level_finish_tops[i]) << endl;
-				break;
-				//level_1_and_2_finish_tops.push_back(first_level_finish_tops[i]);
-			} else {
-//				for (int k = 0; k < last_color_of_small_blocks; k ++) {					// заполнение
-//					if (blockIsNotUsed(first_level_finish_tops[i], k)) {
-//						first_level_finish_tops[i].buildings[j + 3] = k + 48;
-//
-//					}
-//				}
 			}
 		}
 	}
-*/
+
+	// можно удалить first_level_finish_tops
+
+
+//=====================/ Застройка 2-й позиции 2-ого этажа /======================
+
+	vector<FinishTop> pos1_and_pos2_on_level2_finish_tops(0);
+
+	for (int i = 0; i < pos1_on_level2_finish_tops.size(); i++) {										// все 1-е этажи построек, у которых на 1-й позиции 2-ого этажа что-то есть
+		if ((typeCheckForFinishTops(pos1_on_level2_finish_tops[i], 0, 1) != 0)) {						// если не этаж, то над ним х
+			pos1_and_pos2_on_level2_finish_tops.push_back(pos1_on_level2_finish_tops[i]);
+		} else {																						// если можно что-то поставить на данный блик
+			for (int k = 0; k < last_color_of_small_blocks; k ++) {										// заполнение
+				if (blockIsNotUsed(pos1_on_level2_finish_tops[i], k)) {
+					pos1_on_level2_finish_tops[i].buildings[4] = k + 48;
+					//myfile << finishTopToStr(pos1_on_level2_finish_tops[i]) << endl;
+					pos1_and_pos2_on_level2_finish_tops.push_back(pos1_on_level2_finish_tops[i]);
+				}
+			}
+		}
+	}
+
+	// можно удалить pos1_on_level2_finish_tops
+
+
+//=====================/ Застройка 3-й позиции 2-ого этажа /======================
+
+	vector<FinishTop> all_finish_tops(0);
+
+	for (int i = 0; i < pos1_and_pos2_on_level2_finish_tops.size(); i++) {								// все 1-е этажи построек, у которых на 1-й позиции 2-ого этажа что-то есть
+			if ((typeCheckForFinishTops(pos1_and_pos2_on_level2_finish_tops[i], 0, 2) != 0)) {			// если не этаж, то над ним х
+				all_finish_tops.push_back(pos1_and_pos2_on_level2_finish_tops[i]);
+				myfile << finishTopToStr(pos1_and_pos2_on_level2_finish_tops[i]) << endl;
+			} else {																					// если можно что-то поставить на данный блик
+				for (int k = 0; k < last_color_of_small_blocks; k ++) {									// заполнение
+					if (blockIsNotUsed(pos1_and_pos2_on_level2_finish_tops[i], k)) {
+						pos1_and_pos2_on_level2_finish_tops[i].buildings[5] = k + 48;
+						myfile << finishTopToStr(pos1_and_pos2_on_level2_finish_tops[i]) << endl;
+						all_finish_tops.push_back(pos1_and_pos2_on_level2_finish_tops[i]);
+					}
+				}
+			}
+		}
+
+
 	myfile.close();
 
 
-
-			/*	if ((i != k) && (j != k)) { for (int l = 1; l <= 10; l++) {								// 2-й этаж	1-я зона
-					if ((i != l)&&(j != l)&&(k != l)) { for (int m = ; m <= 10; m++) {					// 2-й этаж	2-я зона
-						if ((i != m)&&(j != m)&&(k != m)&&(l != m)) { for (int n = ; n <= 10; ++n) {	// 2-й этаж	3-я зона
-							if ((i != n)&&(j != n)&&(k != n)&&(l != n)&&(m != n)) {
-
-							}
-						}}
-					}}
-				}}*/
+//======================/ Создание 3-х этажей схем построек/======================
+//TODO:
 
 
 	cout << "working...." << endl; // prints working....
@@ -219,7 +215,7 @@ int typeCheckForFinishTops(FinishTop top, int level, int pos) {
 	if ((cheking >= 53)&&(cheking <= 57))return 1;  // шпиль
 }
 
-bool blockIsNotUsed(FinishTop top, short int new_block) {
+bool blockIsNotUsed(FinishTop top, int new_block) {
 	char char_block = new_block + 48;
 	for (short int i = 0; i < max_num_of_used_blocks; i++) {
 		if (top.buildings[i] == char_block) return 0;
@@ -227,7 +223,7 @@ bool blockIsNotUsed(FinishTop top, short int new_block) {
 	return 1;
 }
 
-string FinishTopToStr(FinishTop top) {
+string finishTopToStr(FinishTop top) {
 	string str_top = "";
 	for (short int i = 0; i < max_num_of_used_blocks; i++) {
 		str_top = (string) str_top + top.buildings[i];
