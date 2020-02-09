@@ -219,7 +219,7 @@ int main() {
 			for (int k = first_color_of_small_blocks; k <= last_color_of_small_blocks; k ++) {			// заполнение
 				if (blockIsNotUsed(pos1_level3_finish_tops[i], k)) {
 					pos1_level3_finish_tops[i].buildings[7] = k + 48;
-//					myfile << finishTopToStr(pos1_level3_finish_tops[i]) << endl;
+					//myfile << finishTopToStr(pos1_level3_finish_tops[i]) << endl;
 					pos1_and_pos2_level3_finish_tops.push_back(pos1_level3_finish_tops[i]);
 				}
 			}
@@ -251,11 +251,13 @@ int main() {
 
 	myfile.close();
 
+	cout << "working...." << endl; // prints working....
+
 //========================/ Поиск кратчайших путей /=========================
 //TODO: так же подумать над доп-заданиями с шаром и новыми цветаи
 
 
-	cout << " working...." << endl; // prints working....
+	cout << "ready" << endl; // prints ready
 	return 0;
 }
 
